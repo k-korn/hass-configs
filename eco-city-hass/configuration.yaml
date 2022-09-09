@@ -1,0 +1,46 @@
+rest:
+  - resource: "https://eco-city.org.ua/public.json"
+	params: 
+	  key: 0.84xxx				# Some pseudo-random access key
+	  id: 1347                  # Station ID from https://eco-city.org.ua
+	  timeShift: 0              # Mandatory parameter
+	scan_interval: 300
+	sensor: 
+	  - name: "EcoCity PM10"
+		unit_of_measurement: "ug/m³"
+		value_template: "{{ value_json |  selectattr('name', 'eq', 'PM10')  | map(attribute='value') | first | default }}"
+		json_attributes_path: "$[?(@.name == 'PM10')]"
+		json_attributes:
+		  - localName
+		  - localUnit
+		  - time
+		  - index
+
+	  - name: "EcoCity PM2.5"
+		unit_of_measurement: "ug/m³"
+		value_template: "{{ value_json |  selectattr('name', 'eq', 'PM2.5')  | map(attribute='value') | first | default }}"
+		json_attributes_path: "$[?(@.name == 'PM2.5')]"
+		json_attributes:
+		  - localName
+		  - localUnit
+		  - time
+		  - index
+
+	  - name: "EcoCity Temperature"
+		unit_of_measurement: "C"
+		value_template: "{{ value_json |  selectattr('name', 'eq', 'Temperature')  | map(attribute='value') | first | default }}"
+
+	  - name: "EcoCity Humidity"
+		unit_of_measurement: "%"
+		value_template: "{{ value_json |  selectattr('name', 'eq', 'Humidity')  | map(attribute='value') | first | default }}"
+
+	  - name: "EcoCity Pressure"
+		unit_of_measurement: "hPa"
+		value_template: "{{ value_json |  selectattr('name', 'eq', 'Pressure')  | map(attribute='value') | first | default }}"
+		
+template:
+  - sensor: 
+	  # Template Sensor to get maximum value of all index attributes as AQI.
+      name: "EcoCity AQI"
+      state: "{{ max(state_attr('sensor.ecocity_pm10', 'index'),state_attr('sensor.ecocity_pm2_5', 'index')) }}"
+      unit_of_measurement: "aqi"
