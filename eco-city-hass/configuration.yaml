@@ -1,7 +1,7 @@
 rest:
   - resource: "https://eco-city.org.ua/public.json"
 	params: 
-	  key: 0.84xxx				# Some pseudo-random access key
+	  key: 0.84xxx              # Some pseudo-random access key
 	  id: 1347                  # Station ID from https://eco-city.org.ua
 	  timeShift: 0              # Mandatory parameter
 	scan_interval: 300
